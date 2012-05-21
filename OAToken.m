@@ -314,7 +314,7 @@
 			
 + (NSNumber *)durationWithString:(NSString *)aDuration {
 	NSUInteger length = [aDuration length];
-	unichar c = toupper([aDuration characterAtIndex:length - 1]);
+	unichar c = (unichar) toupper([aDuration characterAtIndex:length - 1]);
 	int mult;
 	if (c >= '0' && c <= '9') {
 		return [NSNumber numberWithInt:[aDuration intValue]];

@@ -30,7 +30,6 @@
 #import "OAHMAC_SHA1SignatureProvider.h"
 #import "OASignatureProviding.h"
 #import "NSMutableURLRequest+Parameters.h"
-#import "NSURL+Base.h"
 
 
 @interface OAMutableURLRequest : NSMutableURLRequest {
