@@ -37,7 +37,7 @@ static NSString *Boundary = @"-----------------------------------0xCoCoaouTHeBou
     NSString *encodedParameters = nil;
     
 	if (![self isMultipart]) {
-		if ([[self HTTPMethod] isEqualToString:@"GET"] || [[self HTTPMethod] isEqualToString:@"DELETE"]) {
+		if ([[self HTTPMethod] isEqualToString:@"GET"] || [[self HTTPMethod] isEqualToString:@"DELETE"] || NO == [[self valueForHTTPHeaderField:@"Content-Type"] isEqualToString:@"application/x-www-form-urlencoded"]) {
 			encodedParameters = [[self URL] query];
 		} else {
 			encodedParameters = [[[NSString alloc] initWithData:[self HTTPBody] encoding:NSASCIIStringEncoding] autorelease];
