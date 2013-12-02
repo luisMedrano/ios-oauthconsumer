@@ -29,14 +29,14 @@ static NSString *Boundary = @"-----------------------------------0xCoCoaouTHeBou
 
 @implementation NSMutableURLRequest (OAParameterAdditions)
 
-- (BOOL)isMultipart {
+- (BOOL)oa_isMultipart {
 	return [[self valueForHTTPHeaderField:@"Content-Type"] hasPrefix:@"multipart/form-data"];
 }
 
-- (NSArray *)parameters {
+- (NSArray *)oa_parameters {
     NSString *encodedParameters = nil;
     
-	if (![self isMultipart]) {
+	if (![self oa_isMultipart]) {
 		if ([[self HTTPMethod] isEqualToString:@"GET"] || [[self HTTPMethod] isEqualToString:@"DELETE"] || NO == [[self valueForHTTPHeaderField:@"Content-Type"] isEqualToString:@"application/x-www-form-urlencoded"]) {
 			encodedParameters = [[self URL] query];
 		} else {
@@ -62,7 +62,7 @@ static NSString *Boundary = @"-----------------------------------0xCoCoaouTHeBou
     return requestParameters;
 }
 
-- (void)setParameters:(NSArray *)parameters
+- (void)setOa_parameters:(NSArray *)parameters
 {
 	NSMutableArray *pairs = [[[NSMutableArray alloc] initWithCapacity:[parameters count]] autorelease];
 	for (OARequestParameter *requestParameter in parameters) {
@@ -72,24 +72,24 @@ static NSString *Boundary = @"-----------------------------------0xCoCoaouTHeBou
 	NSString *encodedParameterPairs = [pairs componentsJoinedByString:@"&"];
     
 	if ([[self HTTPMethod] isEqualToString:@"GET"] || [[self HTTPMethod] isEqualToString:@"DELETE"]) {
-		[self setURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@?%@", [[self URL] URLStringWithoutQuery], encodedParameterPairs]]];
+		[self setURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@?%@", [[self URL] oa_URLStringWithoutQuery], encodedParameterPairs]]];
 	} else {
 		// POST, PUT
-		[self setHTTPBodyWithString:encodedParameterPairs];
+		[self oa_setHTTPBodyWithString:encodedParameterPairs];
 		[self setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
 	}
 }
 
-- (void)setHTTPBodyWithString:(NSString *)body {
+- (void)oa_setHTTPBodyWithString:(NSString *)body {
 	NSData *bodyData = [body dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
 	[self setValue:[NSString stringWithFormat:@"%u", (unsigned)[bodyData length]]
           forHTTPHeaderField:@"Content-Length"];
 	[self setHTTPBody:bodyData];
 }
 
-- (void)attachFileWithName:(NSString *)name filename:(NSString*)filename contentType:(NSString *)contentType data:(NSData*)data {
+- (void)oa_attachFileWithName:(NSString *)name filename:(NSString*)filename contentType:(NSString *)contentType data:(NSData*)data {
 
-	NSArray *parameters = [self parameters];
+	NSArray *parameters = [self oa_parameters];
 	[self setValue:[@"multipart/form-data; boundary=" stringByAppendingString:Boundary] forHTTPHeaderField:@"Content-type"];
 	
 	NSMutableData *bodyData = [NSMutableData new];
