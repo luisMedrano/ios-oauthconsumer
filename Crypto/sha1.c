@@ -118,7 +118,6 @@ void SHA1Init(SHA1_CTX* context)
 
 /* Run your data through this. */
 
-//void SHA1Update(SHA1_CTX* context, int8_t* data, unsigned int len)
 void SHA1Update(SHA1_CTX* context, int8_t* data, int len)
 {
 unsigned int i, j;
