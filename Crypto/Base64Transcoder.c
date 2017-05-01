@@ -29,8 +29,9 @@
 
 #include <math.h>
 #include <string.h>
+#include <stdint.h>
 
-const u_int8_t kBase64EncodeTable[64] = {
+const wint_t kBase64EncodeTable[64] = {
 	/*  0 */ 'A',	/*  1 */ 'B',	/*  2 */ 'C',	/*  3 */ 'D', 
 	/*  4 */ 'E',	/*  5 */ 'F',	/*  6 */ 'G',	/*  7 */ 'H', 
 	/*  8 */ 'I',	/*  9 */ 'J',	/* 10 */ 'K',	/* 11 */ 'L', 
@@ -57,7 +58,7 @@ const u_int8_t kBase64EncodeTable[64] = {
 -5 = Illegal noise (null byte)
 */
 
-const int8_t kBase64DecodeTable[128] = {
+const wint_t kBase64DecodeTable[128] = {
 	/* 0x00 */ -5, 	/* 0x01 */ -3, 	/* 0x02 */ -3, 	/* 0x03 */ -3,
 	/* 0x04 */ -3, 	/* 0x05 */ -3, 	/* 0x06 */ -3, 	/* 0x07 */ -3,
 	/* 0x08 */ -3, 	/* 0x09 */ -2, 	/* 0x0a */ -2, 	/* 0x0b */ -2,
@@ -92,14 +93,14 @@ const int8_t kBase64DecodeTable[128] = {
 	/* '|' */ -3,	/* '}' */ -3,	/* '~' */ -3,	/* 0x7f */ -3
 };
 
-const u_int8_t kBits_00000011 = 0x03;
-const u_int8_t kBits_00001111 = 0x0F;
-const u_int8_t kBits_00110000 = 0x30;
-const u_int8_t kBits_00111100 = 0x3C;
-const u_int8_t kBits_00111111 = 0x3F;
-const u_int8_t kBits_11000000 = 0xC0;
-const u_int8_t kBits_11110000 = 0xF0;
-const u_int8_t kBits_11111100 = 0xFC;
+const wint_t kBits_00000011 = 0x03;
+const wint_t kBits_00001111 = 0x0F;
+const wint_t kBits_00110000 = 0x30;
+const wint_t kBits_00111100 = 0x3C;
+const wint_t kBits_00111111 = 0x3F;
+const wint_t kBits_11000000 = 0xC0;
+const wint_t kBits_11110000 = 0xF0;
+const wint_t kBits_11111100 = 0xFC;
 
 size_t EstimateBas64EncodedDataSize(size_t inDataSize)
 {
@@ -121,8 +122,8 @@ size_t theEncodedDataSize = EstimateBas64EncodedDataSize(inInputDataSize);
 if (*ioOutputDataSize < theEncodedDataSize)
 	return(false);
 *ioOutputDataSize = theEncodedDataSize;
-const u_int8_t *theInPtr = (const u_int8_t *)inInputData;
-u_int32_t theInIndex = 0, theOutIndex = 0;
+const wint_t *theInPtr = (const wint_t *)inInputData;
+int32_t theInIndex = 0, theOutIndex = 0;
 for (; theInIndex < (inInputDataSize / 3) * 3; theInIndex += 3)
 	{
 	outOutputData[theOutIndex++] = kBase64EncodeTable[(theInPtr[theInIndex] & kBits_11111100) >> 2];
@@ -171,10 +172,10 @@ size_t theDecodedDataSize = EstimateBas64DecodedDataSize(inInputDataSize);
 if (*ioOutputDataSize < theDecodedDataSize)
 	return(false);
 *ioOutputDataSize = 0;
-const u_int8_t *theInPtr = (const u_int8_t *)inInputData;
-u_int8_t *theOutPtr = (u_int8_t *)ioOutputData;
+const int8_t *theInPtr = (const int8_t *)inInputData;
+int8_t *theOutPtr = (int8_t *)ioOutputData;
 size_t theInIndex = 0, theOutIndex = 0;
-u_int8_t theOutputOctet;
+int8_t theOutputOctet;
 size_t theSequence = 0;
 for (; theInIndex < inInputDataSize; )
 	{
