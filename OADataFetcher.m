@@ -44,37 +44,6 @@
 	[super dealloc];
 }
 
-/* Protocol for async URL loading */
-- (void)connection:(NSURLConnection *)aConnection didReceiveResponse:(NSURLResponse *)aResponse {
-	[response release];
-	response = [aResponse retain];
-	[responseData setLength:0];
-}
-	
-- (void)connection:(NSURLConnection *)aConnection didFailWithError:(NSError *)error {
-	OAServiceTicket *ticket = [[OAServiceTicket alloc] initWithRequest:request
-															  response:response
-																  data:responseData
-															didSucceed:NO];
-
-	[delegate performSelector:didFailSelector withObject:ticket withObject:error];
-	[ticket release];
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-	[responseData appendData:data];
-}
-
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-	OAServiceTicket *ticket = [[OAServiceTicket alloc] initWithRequest:request
-															  response:response
-																  data:responseData
-															didSucceed:[(NSHTTPURLResponse *)response statusCode] < 400];
-
-	[delegate performSelector:didFinishSelector withObject:ticket withObject:responseData];
-	[ticket release];
-}
-
 - (void)fetchDataWithRequest:(OAMutableURLRequest *)aRequest delegate:(id)aDelegate didFinishSelector:(SEL)finishSelector didFailSelector:(SEL)failSelector {
 	[request release];
 	request = [aRequest retain];
@@ -83,8 +52,23 @@
     didFailSelector = failSelector;
     
     [request prepare];
-
-	connection = [[NSURLConnection alloc] initWithRequest:aRequest delegate:self];
+    
+    NSURLSession *session = [NSURLSession sharedSession];
+    NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request
+                                                completionHandler:^(NSData *data, NSURLResponse *requestResponse, NSError *error)
+                                      {
+                                          NSHTTPURLResponse *code = (NSHTTPURLResponse *)response;
+                                          BOOL requestSuccess = (code.statusCode < 400);
+                                          
+                                          
+                                          OAServiceTicket *ticket = [[OAServiceTicket alloc] initWithRequest:request
+                                                                                                    response:requestResponse
+                                                                                                        data:responseData
+                                                                                                  didSucceed:requestSuccess];
+                                          [delegate performSelector:didFinishSelector withObject:ticket withObject:responseData];
+                                          
+                                      }];
+    [dataTask resume];
 }
 
 @end
