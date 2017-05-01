@@ -29,29 +29,20 @@
 @implementation NSString (OAURLEncodingAdditions)
 
 - (NSString *)oa_encodedURLString {
-	NSString *result = (NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
-                                                                           (CFStringRef)self,
-                                                                           NULL,                   // characters to leave unescaped (NULL = all escaped sequences are replaced)
-                                                                           CFSTR("?=&+"),          // legal URL characters to be escaped (NULL = all legal characters are replaced)
-                                                                           kCFStringEncodingUTF8); // encoding
+    
+    NSString *result = [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 	return [result autorelease];
 }
 
 - (NSString *)oa_encodedURLParameterString {
-    NSString *result = (NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
-                                                                           (CFStringRef)self,
-                                                                           NULL,
-                                                                           CFSTR(":/=,!$&'()*+;[]@#?"),
-                                                                           kCFStringEncodingUTF8);
+    
+    NSString *result = [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 	return [result autorelease];
 }
 
 - (NSString *)oa_decodedURLString {
-	NSString *result = (NSString*)CFURLCreateStringByReplacingPercentEscapesUsingEncoding(kCFAllocatorDefault,
-																						  (CFStringRef)self,
-																						  CFSTR(""),
-																						  kCFStringEncodingUTF8);
-	
+    
+    NSString *result = [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
 	return [result autorelease];
 	
 }
